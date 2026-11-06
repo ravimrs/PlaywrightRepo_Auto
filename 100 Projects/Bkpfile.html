@@ -1,0 +1,350 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Tip Collector</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 32px 16px;
+        min-height: 100vh;
+        background: #f4f7f2;
+        color: #18312a;
+        font:
+          16px/1.5 system-ui,
+          sans-serif;
+      }
+      main {
+        width: min(100%, 700px);
+        margin: auto;
+      }
+      header {
+        margin-bottom: 24px;
+      }
+      .eyebrow {
+        color: #43856b;
+        font-size: 0.75rem;
+        font-weight: 800;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+      h1 {
+        margin: 4px 0;
+        font-size: clamp(2rem, 6vw, 3rem);
+        letter-spacing: -0.05em;
+      }
+      header p {
+        margin: 0;
+        color: #6b7c74;
+      }
+      .summary {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+        margin-bottom: 16px;
+      }
+      .card,
+      .panel {
+        border: 1px solid #e1e9e2;
+        border-radius: 16px;
+        background: white;
+        box-shadow: 0 8px 24px #203b2c0a;
+      }
+      .card {
+        padding: 16px 20px;
+      }
+      .card span {
+        color: #718078;
+        font-size: 0.85rem;
+      }
+      .card strong {
+        display: block;
+        font-size: 1.75rem;
+      }
+      .panel {
+        padding: 22px;
+      }
+      h2 {
+        margin: 0 0 16px;
+        font-size: 1.15rem;
+      }
+      form {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      label {
+        display: grid;
+        gap: 6px;
+        color: #52645b;
+        font-size: 0.86rem;
+        font-weight: 650;
+      }
+      input,
+      select {
+        width: 100%;
+        min-height: 44px;
+        padding: 9px 11px;
+        border: 1px solid #d9e3da;
+        border-radius: 9px;
+        background: #fbfdfb;
+        color: #18312a;
+        font: inherit;
+      }
+      input:focus,
+      select:focus {
+        outline: 2px solid #43856b;
+        outline-offset: 1px;
+      }
+      button {
+        min-height: 44px;
+        border: 0;
+        border-radius: 9px;
+        background: #287253;
+        color: white;
+        font: inherit;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #1d6044;
+      }
+      .submit {
+        grid-column: 1 / -1;
+      }
+      .history {
+        margin-top: 16px;
+        padding: 0;
+        overflow: hidden;
+      }
+      .history-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 18px 22px 0;
+      }
+      .history-head h2 {
+        margin: 0;
+      }
+      .clear {
+        min-height: auto;
+        padding: 7px 10px;
+        background: transparent;
+        color: #748279;
+        font-size: 0.82rem;
+      }
+      .clear:hover {
+        background: #f2f6f2;
+        color: #a33;
+      }
+      .table-wrap {
+        overflow-x: auto;
+        padding: 12px 22px 18px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+      }
+      th {
+        padding: 10px 8px;
+        color: #829087;
+        font-size: 0.72rem;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+      }
+      td {
+        padding: 12px 8px;
+        border-top: 1px solid #edf1ed;
+        font-size: 0.9rem;
+      }
+      th:last-child,
+      td:last-child {
+        text-align: right;
+      }
+      td:last-child {
+        font-weight: 700;
+      }
+      .empty {
+        padding: 20px 8px;
+        color: #829087;
+        text-align: center;
+      }
+      @media (max-width: 520px) {
+        body {
+          padding: 22px 14px;
+        }
+        form {
+          grid-template-columns: 1fr;
+        }
+        .submit {
+          grid-column: auto;
+        }
+        .panel {
+          padding: 18px;
+        }
+        .history {
+          padding: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <div class="eyebrow">Shift overview</div>
+        <h1>Tip Collector</h1>
+        <p>Keep track of every tip, all in one place.</p>
+      </header>
+      <section class="summary" aria-label="Tip totals">
+        <div class="card">
+          <span>Total collected</span><strong id="total">$0.00</strong>
+        </div>
+        <div class="card">
+          <span>Tips recorded</span><strong id="count">0</strong>
+        </div>
+      </section>
+      <section class="panel" aria-labelledby="form-title">
+        <h2 id="form-title">Add a tip</h2>
+        <form id="tip-form">
+          <label for="name"
+            >Customer or table
+            <input
+              id="name"
+              name="name"
+              type="text"
+              placeholder="e.g. Table 12"
+              maxlength="60"
+            />
+          </label>
+          <label for="amount"
+            >Tip amount
+            <input
+              id="amount"
+              name="amount"
+              type="number"
+              min="0.01"
+              step="0.01"
+              placeholder="0.00"
+              required
+            />
+          </label>
+          <label for="method"
+            >Payment method
+            <select id="method" name="method">
+              <option>Cash</option>
+              <option>Card</option>
+              <option>Other</option>
+            </select>
+          </label>
+          <label for="date"
+            >Date
+            <input id="date" name="date" type="date" required />
+          </label>
+          <button class="submit" type="submit">Add tip</button>
+        </form>
+      </section>
+      <section class="panel history" aria-labelledby="history-title">
+        <div class="history-head">
+          <h2 id="history-title">Recent tips</h2>
+          <button class="clear" id="clear" type="button">Clear all</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Customer / table</th>
+                <th>Method</th>
+                <th>Date</th>
+                <th>Amount</th>
+              </tr>
+            </thead>
+            <tbody id="tips-list"></tbody>
+          </table>
+          <div class="empty" id="empty">No tips recorded yet.</div>
+        </div>
+      </section>
+    </main>
+    <script>
+      const form = document.querySelector("#tip-form");
+      const list = document.querySelector("#tips-list");
+      const total = document.querySelector("#total");
+      const count = document.querySelector("#count");
+      const empty = document.querySelector("#empty");
+      const storageKey = "tip-collector-records";
+      let tips = [];
+      try {
+        const saved = JSON.parse(localStorage.getItem(storageKey) || "[]");
+        if (Array.isArray(saved)) tips = saved;
+      } catch {
+        tips = [];
+      }
+
+      const dateInput = document.querySelector("#date");
+      const today = () => new Date().toISOString().slice(0, 10);
+      dateInput.value = today();
+
+      function money(value) {
+        return new Intl.NumberFormat(undefined, {
+          style: "currency",
+          currency: "USD",
+        }).format(value);
+      }
+
+      function render() {
+        list.replaceChildren();
+        total.textContent = money(
+          tips.reduce((sum, tip) => sum + Number(tip.amount), 0),
+        );
+        count.textContent = String(tips.length);
+        empty.hidden = tips.length > 0;
+        [...tips].reverse().forEach((tip) => {
+          const row = document.createElement("tr");
+          [tip.name || "Walk-in", tip.method, tip.date].forEach((value) => {
+            const cell = document.createElement("td");
+            cell.textContent = value;
+            row.append(cell);
+          });
+          const amountCell = document.createElement("td");
+          amountCell.textContent = money(Number(tip.amount));
+          row.append(amountCell);
+          list.append(row);
+        });
+        try {
+          localStorage.setItem(storageKey, JSON.stringify(tips));
+        } catch {
+          /* Storage may be unavailable. */
+        }
+      }
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        if (!form.reportValidity()) return;
+        const data = new FormData(form);
+        const amount = Number(data.get("amount"));
+        if (!Number.isFinite(amount) || amount <= 0) return;
+        tips.push({
+          name: String(data.get("name")).trim(),
+          amount,
+          method: String(data.get("method")),
+          date: String(data.get("date")),
+        });
+        form.reset();
+        dateInput.value = today();
+        render();
+        document.querySelector("#amount").focus();
+      });
+
+      document.querySelector("#clear").addEventListener("click", () => {
+        if (!tips.length || !confirm("Clear all recorded tips?")) return;
+        tips = [];
+        render();
+      });
+      render();
+    </script>
+  </body>
+</html>
